@@ -37,25 +37,37 @@ module BasePlate()
 }
 
 // make space for them film rewind lever
-film_lever_hole_diameter = 30;
-film_lever_x_placement = -44;
-film_display_hole_diameter = 25;
-film_display_x_placement = 44;
-tripod_outer_diameter = 25;
-tripod_outer_depth = 1;
-tripod_outer_x_placement = -3;
+left_hole_diameter = 27.98;
+
+center_hole_diameter = 26.04;
+center_hole_depth = 1;
+
+right_hole_diameter = 23.06;
+right_little_hole_diameter = 7;
+
+left_to_center_dist = 14.2;
+center_to_right_dist = 21.6;
+
+left_hole_x_placement = -(left_hole_diameter/2 + left_to_center_dist + center_hole_diameter + center_to_right_dist + right_hole_diameter/2)/2;
+center_hole_x_placement = left_hole_x_placement + left_hole_diameter/2 + left_to_center_dist + center_hole_diameter/2;
+right_hole_x_placement = -left_hole_x_placement;// assuming symetry!
+
 difference() {
 	BasePlate();
 
-	translate([film_lever_x_placement, 0, 0])
+	translate([left_hole_x_placement, 0, 0])
 	linear_extrude(height=base_plate_thickness)
-	circle(r=film_lever_hole_diameter/2);
+	circle(r=left_hole_diameter/2);
 
-	translate([film_display_x_placement, 0, 0])
+	translate([center_hole_x_placement, 0, base_plate_thickness-center_hole_depth])
+	linear_extrude(height=right_hole_depth)
+	circle(r=center_hole_diameter/2);
+	
+	translate([right_hole_x_placement, 0, 0])
 	linear_extrude(height=base_plate_thickness)
-	circle(r=film_display_hole_diameter/2);
-
-	translate([tripod_outer_x_placement, 0, base_plate_thickness-tripod_outer_depth])
-	linear_extrude(height=tripod_outer_depth)
-	circle(r=tripod_outer_diameter/2);
+	hull(){
+		circle(r=right_hole_diameter/2);
+		translate([-20, -right_hole_diameter/2+right_little_hole_diameter/2, 0])
+		circle(r=right_little_hole_diameter/2);
+	}
 }
