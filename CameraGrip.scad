@@ -1,5 +1,5 @@
-cam_width = 121;
-cam_depth = 32;
+cam_width = 120.5;
+cam_depth = 31.6;
 
 cam_slope = 2;
 
@@ -7,7 +7,7 @@ cam_back_radius = 15;
 cam_front_radius = 4;
 
 base_plate_thickness = 5;
-handle_height = 40;
+handle_height = 45;
 
 module BasePlate()
 {
@@ -42,7 +42,7 @@ module HandleBase()
 
 	handle_outer_corner_x_placement = (cam_width/2-handle_radius-(cam_depth+handle_depth-cam_back_radius-handle_radius)*cam_slope/(cam_depth-cam_back_radius-cam_front_radius));
 
-	linear_extrude(height=handle_height)
+	linear_extrude(height=handle_height+base_plate_thickness)
 	hull() {
 		translate([(cam_width/2-cam_front_radius-cam_slope), (cam_depth/2-cam_front_radius), 0])
 		circle(r=cam_front_radius);
@@ -65,19 +65,19 @@ module HandleBase()
 module BasePlateWithHoles()
 {
 	// make space for the film rewind lever
-	tolerance = 0;
+	tolerance = 1;
 	
 	left_hole_diameter = 27.98;
 	
 	center_hole_diameter = 26.04;
-	center_hole_depth = 2; // TODO measure
+	center_hole_depth = 2.5;
 	
 	right_hole_diameter = 23.06;
-	right_little_hole_diameter = 7; // TODO measure
+	right_little_hole_diameter = 9.95;
 	
 	left_to_center_dist = 14.2;
 	center_to_right_dist = 21.6;
-	right_to_right_little_dist = 28; // TODO measure
+	right_to_right_little_dist = 33.5;
 	
 	left_hole_x_placement = -(left_hole_diameter/2 + left_to_center_dist + center_hole_diameter + center_to_right_dist + right_hole_diameter/2)/2;
 	center_hole_x_placement = left_hole_x_placement + left_hole_diameter/2 + left_to_center_dist + center_hole_diameter/2;
