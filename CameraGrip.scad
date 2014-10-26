@@ -6,11 +6,12 @@ cam_slope = 2;
 cam_back_radius = 15;
 cam_front_radius = 4;
 
-base_plate_thickness = 5;
+base_plate_thickness = 8;
 handle_height = 45;
 
-module BasePlate()
-{
+hole_tolerance = 1;
+
+module BasePlate() {
 
 	// adapted from http://www.thingiverse.com/thing:9347 {
 	linear_extrude(height=base_plate_thickness)
@@ -32,45 +33,95 @@ module BasePlate()
 
 }
 
-module HandleBase()
-{
+module Handle() {
 	handle_depth = 15;
 	handle_width = 15;
 
 	handle_radius = 6;
-	handle_inner_radius = 3;
+	handle_inner_radius = 2;
 
 	handle_outer_corner_x_placement = (cam_width/2-handle_radius-(cam_depth+handle_depth-cam_back_radius-handle_radius)*cam_slope/(cam_depth-cam_back_radius-cam_front_radius));
 
-	linear_extrude(height=handle_height+base_plate_thickness)
-	hull() {
-		translate([(cam_width/2-cam_front_radius-cam_slope), (cam_depth/2-cam_front_radius), 0])
-		circle(r=cam_front_radius);
-		
-		translate([handle_outer_corner_x_placement, 
-			(cam_depth/2+handle_depth-handle_radius), 
-			0])
-		circle(r=handle_radius);
+	union() {
 
-		translate([handle_outer_corner_x_placement+handle_radius-handle_width+handle_inner_radius, 
-			(cam_depth/2+handle_depth-handle_inner_radius), 
-			0])
-		circle(r=handle_inner_radius);
+		// handle base
+		linear_extrude(height=base_plate_thickness)
+		hull() {
+			translate([(cam_width/2-cam_front_radius-cam_slope), (cam_depth/2-cam_front_radius), 0])
+			circle(r=cam_front_radius);
+			
+			translate([handle_outer_corner_x_placement, 
+				(cam_depth/2+handle_depth-handle_radius), 
+				0])
+			circle(r=handle_radius);
+	
+			translate([handle_outer_corner_x_placement+handle_radius-handle_width+handle_inner_radius, 
+				(cam_depth/2+handle_depth-handle_inner_radius), 
+				0])
+			circle(r=handle_inner_radius);
+	
+			translate([handle_outer_corner_x_placement+handle_radius-handle_width+handle_inner_radius, (cam_depth/2-cam_front_radius), 0])
+			circle(r=cam_front_radius);
+		}
 
-		translate([handle_outer_corner_x_placement+handle_radius-handle_width+handle_inner_radius, (cam_depth/2-cam_front_radius), 0])
-		circle(r=cam_front_radius);
+		// handle upper
+		minkowski() {
+			difference() {
+				translate([0, 0, base_plate_thickness])
+				linear_extrude(height=handle_height-handle_inner_radius)
+				hull() {
+					translate([(cam_width/2-cam_front_radius-cam_slope), (cam_depth/2-cam_front_radius), 0])
+					circle(r=cam_front_radius-handle_inner_radius);//TODO what happens when r<=0?
+					
+					translate([handle_outer_corner_x_placement, 
+						(cam_depth/2+handle_depth-handle_radius), 
+						0])
+					circle(r=handle_radius-handle_inner_radius);//TODO what happens when r<=0?
+			
+					translate([handle_outer_corner_x_placement+handle_radius-handle_width+handle_inner_radius, 
+						(cam_depth/2+handle_depth-handle_inner_radius)-1, 
+						0])
+					square(size = [1, 1], center = false);
+			
+					translate([handle_outer_corner_x_placement+handle_radius-handle_width+handle_inner_radius, (cam_depth/2-cam_front_radius), 0])
+					circle(r=cam_front_radius-handle_inner_radius);//TODO what happens when r<=0?
+				}
+	
+				// Cut away excess material from the handle (plus a bit more which minkowski will fill)
+				translate([0, 0, base_plate_thickness])
+				linear_extrude(height=handle_height)
+				square(size = [cam_width, cam_depth+2*handle_inner_radius], center = true);
+				
+				// cut the top in an angle
+				translate([0, cam_depth/2+handle_inner_radius, base_plate_thickness+handle_height-handle_inner_radius])
+				rotate([-10, 0, 0]){
+					linear_extrude(height=handle_height)
+					square(size = [cam_width, cam_depth+2*handle_inner_radius], center = false);
+				}
+			}
+			sphere(r = handle_inner_radius);
+		}
+
 	}
+
 }
 
-module BasePlateWithHoles()
-{
-	// make space for the film rewind lever
-	tolerance = 1;
-	
+// function to make simple holes, supports negative depth!
+module Hole(diameter, depth, placement=[0, 0, 0]) {
+	placement_offset=depth < 0? [0, 0, depth] : [0, 0, 0];
+	translate(placement+placement_offset)
+	linear_extrude(height=abs(depth))
+	circle(r=diameter/2);
+}
+
+module BasePlateHoles(tolerance = 0) {
 	left_hole_diameter = 27.98;
 	
 	center_hole_diameter = 26.04;
 	center_hole_depth = 2.5;
+	tripod_hole_diameter = 6.2;
+	tripod_screw_head_diameter = 12; // TODO measure
+	tripod_screw_head_height = 3; // TODO measure
 	
 	right_hole_diameter = 23.06;
 	right_little_hole_diameter = 9.95;
@@ -83,35 +134,45 @@ module BasePlateWithHoles()
 	center_hole_x_placement = left_hole_x_placement + left_hole_diameter/2 + left_to_center_dist + center_hole_diameter/2;
 	right_hole_x_placement = -left_hole_x_placement;// assuming symmetry!
 	
-	difference() {
-		union() {
-			HandleBase();
-			BasePlate();
-		}
-	
-		translate([left_hole_x_placement, 0, 0])
-		linear_extrude(height=base_plate_thickness)
-		circle(r=(left_hole_diameter+tolerance)/2);
-	
-		translate([center_hole_x_placement, 0, base_plate_thickness-center_hole_depth])
-		linear_extrude(height=center_hole_depth)
-		circle(r=(center_hole_diameter+tolerance)/2);
-		
-		translate([right_hole_x_placement, 0, 0])
-		linear_extrude(height=base_plate_thickness)
-		hull() {
-			circle(r=(right_hole_diameter+tolerance)/2);
-			translate([-sqrt(right_to_right_little_dist*right_to_right_little_dist - right_to_right_little_dist*(right_hole_diameter+right_little_hole_diameter) + right_hole_diameter*right_little_hole_diameter), 
-				-right_hole_diameter/2+right_little_hole_diameter/2, 
-				0])
-			circle(r=(right_little_hole_diameter+tolerance)/2);
-		}
+	Hole(left_hole_diameter+tolerance, 
+		base_plate_thickness,
+		[left_hole_x_placement, 0, 0]);
+
+	Hole(center_hole_diameter+tolerance,
+		-center_hole_depth,
+		[center_hole_x_placement, 0, base_plate_thickness]);
+
+	Hole(tripod_hole_diameter+tolerance,
+		base_plate_thickness,
+		[center_hole_x_placement, 0, 0]);
+
+	Hole(tripod_screw_head_diameter,
+		tripod_screw_head_height,
+		[center_hole_x_placement, 0, 0]);
+
+	translate([right_hole_x_placement, 0, 0])
+	hull() {
+		Hole(right_hole_diameter+tolerance,
+			base_plate_thickness);
+		Hole(right_little_hole_diameter+tolerance,
+			base_plate_thickness,
+			[-sqrt(right_to_right_little_dist*right_to_right_little_dist - right_to_right_little_dist*(right_hole_diameter+right_little_hole_diameter) + right_hole_diameter*right_little_hole_diameter), 
+			-right_hole_diameter/2+right_little_hole_diameter/2, 
+			0]);
 	}
 }
 
-difference() {
-	BasePlateWithHoles();
-	translate([0, 0, base_plate_thickness])
-	linear_extrude(height=handle_height)
-	square(size = [cam_width, cam_depth], center = true);
+module BasePlateWithHolesAndHandle() {
+
+		// Cut Holes for levers on the bottom of the camera
+		difference() {
+			// Join BasePlate and Handle
+			union() {
+				BasePlate();
+				Handle();
+			}
+			BasePlateHoles(hole_tolerance);
+		}
 }
+
+BasePlateWithHolesAndHandle();
