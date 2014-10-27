@@ -65,6 +65,7 @@ module Handle() {
 		}
 
 		// handle upper
+		difference() {
 		minkowski() {
 			difference() {
 				translate([0, 0, base_plate_thickness])
@@ -92,14 +93,42 @@ module Handle() {
 				linear_extrude(height=handle_height)
 				square(size = [cam_width, cam_depth+2*handle_inner_radius], center = true);
 				
-				// cut the top in an angle
-				translate([0, cam_depth/2+handle_inner_radius, base_plate_thickness+handle_height-handle_inner_radius])
-				rotate([-10, 0, 0]){
-					linear_extrude(height=handle_height)
-					square(size = [cam_width, cam_depth+2*handle_inner_radius], center = false);
+				// Cut the top in an angle
+				difference() {	
+					translate([0, cam_depth/2+handle_inner_radius, base_plate_thickness+handle_height])
+					rotate([-10, 0, 0]){
+						linear_extrude(height=handle_height) // doesn't really matter
+						square(size = [cam_width, handle_depth*2], center = false); // doesn't really matter
+					}
+					
 				}
+				
 			}
-			sphere(r = handle_inner_radius);
+
+		
+		sphere(r = handle_inner_radius);
+		}
+
+		difference() {	
+			translate([0, cam_depth/2+handle_inner_radius-10, base_plate_thickness+handle_height-handle_inner_radius-handle_radius])
+			rotate([-10, 0, 0]){
+				linear_extrude(height=handle_height) // doesn't really matter
+				square(size = [cam_width, handle_depth*2], center = false); // doesn't really matter
+			}
+			
+			translate([cam_width/2-cam_slope-handle_width/2-cam_slope, // more or less...
+				cam_depth/2+3, 
+				0]) 
+			rotate([0, 90, 0]) {
+				rotate_extrude(convexity = 10, $fn = 100) {
+				translate([handle_height+base_plate_thickness-handle_inner_radius-1.2*handle_width/2, 0, 0])
+				circle(r = 1.2*handle_width/2);
+				}
+	
+			};
+
+		}
+
 		}
 
 	}
@@ -176,3 +205,11 @@ module BasePlateWithHolesAndHandle() {
 }
 
 BasePlateWithHolesAndHandle();
+
+//translate([cam_width/2-cam_slope-15/2, cam_depth/2+3, 0]) 
+//rotate([0, 90, 0]) {
+//	rotate_extrude(convexity = 10) {
+//	translate([handle_height+base_plate_thickness-6*2, 0, 0])
+//	circle(r = 15);//handle_radius);
+//} 
+//}
