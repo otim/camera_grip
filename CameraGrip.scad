@@ -6,7 +6,7 @@ cam_slope = 2;
 cam_back_radius = 15;
 cam_front_radius = 4;
 
-base_plate_thickness = 8;
+base_plate_thickness = 8.8;
 handle_height = 45;
 
 hole_tolerance = 1;
@@ -116,16 +116,16 @@ module Handle() {
 				square(size = [cam_width, handle_depth*2], center = false); // doesn't really matter
 			}
 			
-			translate([cam_width/2-cam_slope-handle_width/2-cam_slope, // more or less...
+			translate([cam_width/2-cam_slope-handle_width/2-cam_slope-2, // more or less...
 				cam_depth/2+3, 
 				0]) 
 			rotate([0, 90, 0]) {
 				rotate_extrude(convexity = 10, $fn = 100) {
-				translate([handle_height+base_plate_thickness-handle_inner_radius-1.2*handle_width/2, 0, 0])
-				circle(r = 1.2*handle_width/2);
+				translate([handle_height+base_plate_thickness-handle_inner_radius-1.8*handle_width/2, 0, 0])
+				circle(r = 1.8*handle_width/2);
 				}
 	
-			};
+			}
 
 		}
 
@@ -149,8 +149,8 @@ module BasePlateHoles(tolerance = 0) {
 	center_hole_diameter = 26.04;
 	center_hole_depth = 2.5;
 	tripod_hole_diameter = 6.2;
-	tripod_screw_head_diameter = 12; // TODO measure
-	tripod_screw_head_height = 3; // TODO measure
+	tripod_screw_head_diameter = 13.50;
+	tripod_screw_head_height = 3.7;
 	
 	right_hole_diameter = 23.06;
 	right_little_hole_diameter = 9.95;
@@ -175,7 +175,7 @@ module BasePlateHoles(tolerance = 0) {
 		base_plate_thickness,
 		[center_hole_x_placement, 0, 0]);
 
-	Hole(tripod_screw_head_diameter,
+	Hole(tripod_screw_head_diameter+tolerance,
 		tripod_screw_head_height,
 		[center_hole_x_placement, 0, 0]);
 
