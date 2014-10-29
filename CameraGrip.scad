@@ -14,7 +14,9 @@ handle_height = 45; // TODO make a bit higher
 hole_tolerance = 1; // will be added to the measured diameters
 
 // work in progress {
-module RoundedCornerTetragon(A=[0, 0, 0], B=[0, 0, 0], C=[0, 0, 0], D=[0, 0, 0]) {
+// Create a hull of two to four circles
+// Usage: RoundedCornerPolygon([x1, y1, r1], ..., [x4, y4, r4])
+module RoundedCornerPolygon(A=[0, 0, 0], B=[0, 0, 0], C=[0, 0, -1], D=[0, 0, -1]) {
 
 	hull() {
 
@@ -24,11 +26,19 @@ module RoundedCornerTetragon(A=[0, 0, 0], B=[0, 0, 0], C=[0, 0, 0], D=[0, 0, 0])
 		translate([B[0], B[1], 0])
 		circle(r=B[2]);
 
-		translate([C[0], C[1], 0])
-		circle(r=C[2]);
+		if (C[2]!=-1) {
 
-		translate([D[0], D[1], 0])
-		circle(r=D[2]);
+			translate([C[0], C[1], 0])
+			circle(r=C[2]);
+
+			if (C[2]!=-1) {
+
+				translate([D[0], D[1], 0])
+				circle(r=D[2]);
+
+			}
+
+		}
 
 	}
 
@@ -72,7 +82,7 @@ module Handle() {
 	handle_outer_left_corner_x = handle_outer_right_corner_x+handle_outer_radius-handle_width+handle_radius;
 	handle_outer_left_corner_y = cam_depth/2+handle_depth-handle_radius;
 
-	handle_inner_right_corner_x = -cam_slope / (cam_depth/2-cam_front_radius) * (cam_depth/2+cam_front_radius) + cam_width/2-cam_front_radius;
+	handle_inner_right_corner_x = -cam_slope / (cam_depth/2-cam_front_radius) * (cam_depth/2+cam_front_radius) + cam_width/2-cam_front_radius;//TODO bug
 	handle_inner_right_corner_y = cam_depth/2+handle_radius;
 
 	handle_inner_left_corner_x = handle_outer_left_corner_x;
@@ -288,7 +298,9 @@ module BasePlateWithHolesAndHandle() {
 
 BasePlateWithHolesAndHandle();
 
-%RoundedCornerTetragon([-20,-20,5],[20,-20,5],[20,20,5],[-20,20,5]);
+%RoundedCornerPolygon([-20,-20,5],[20,-20,5],[20,20,5],[-20,20,5]);
+%RoundedCornerPolygon([-20,-20,10],[20,-20,10],[20,20,10]);
+%RoundedCornerPolygon([-20,-20,15],[20,-20,15]);
 
 //translate([cam_width/2-cam_slope-15/2, cam_depth/2+3, 0]) 
 //rotate([0, 90, 0]) {
