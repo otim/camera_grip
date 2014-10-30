@@ -9,7 +9,7 @@ cam_back_radius = 15;
 cam_front_radius = 4;
 
 base_plate_thickness = 8.8;
-handle_height = 45; // TODO make a bit higher
+handle_height = 48;
 
 hole_tolerance = 1; // will be added to the measured diameters
 
@@ -91,49 +91,30 @@ module Handle() {
 					[handle_outer_left_corner_x, (cam_depth/2+handle_depth-handle_radius), handle_radius],
 					[handle_inner_left_corner_x, (cam_depth/2-cam_front_radius), handle_radius]);
 	
-				linear_extrude(height=base_plate_thickness+handle_height)
+				linear_extrude(height=base_plate_thickness+handle_height-handle_radius)
 				RoundedCornerPolygon([handle_inner_right_corner_x, handle_inner_right_corner_y, handle_radius],
 					[handle_outer_right_corner_x, handle_outer_right_corner_y, handle_outer_radius],
 					[handle_outer_left_corner_x, handle_outer_left_corner_y, handle_radius],
 					[handle_inner_left_corner_x, handle_inner_left_corner_y, handle_radius]);
-
-				// does not work yet
-				
-				/*translate([0, 0, base_plate_thickness+handle_height])
-				//minkowski() {
-
-					linear_extrude(height=base_plate_thickness)
-					hull() {
-
-						polygon(points=[[handle_inner_right_corner_x, handle_inner_right_corner_y],
-							[handle_outer_left_corner_x, handle_outer_left_corner_y],
-							[handle_inner_left_corner_x, handle_inner_left_corner_y]], paths=[0,1,2]);
 			
-						//translate([handle_inner_right_corner_x, 
-//							handle_inner_right_corner_y, 
-//							0])
-//						circle(r=cam_front_radius);
+				translate([0, 0, base_plate_thickness+handle_height-handle_radius-1])
+				minkowski() {
+	
+					linear_extrude(height=1)//minkowski apparently only works on 3D objects...
+					hull() {
+	
+						polygon(points=[[handle_inner_left_corner_x, handle_inner_left_corner_y],[handle_inner_right_corner_x, handle_inner_right_corner_y],[handle_outer_left_corner_x, handle_outer_left_corner_y]], paths=[[0,1,2]]);
 						
-						translate([handle_outer_right_corner_x, 
+						translate([handle_outer_right_corner_x,
 							handle_outer_right_corner_y, 
 							0])
 						circle(r=handle_outer_radius-handle_radius);
 		
-//						translate([handle_outer_left_corner_x, 
-//							handle_outer_left_corner_y, 
-//							0])
-//						circle(r=handle_radius);
-//				
-//						translate([handle_outer_left_corner_x, 
-//							handle_inner_left_corner_y, 
-//							0])
-//						circle(r=cam_front_radius);
-		
 					}
-
-					//sphere(r=handle_radius);
-
-				//}*/
+	
+					sphere(r=handle_radius);
+	
+				}
 	
 			}
 
@@ -259,5 +240,12 @@ module BasePlateWithHolesAndHandle() {
 
 BasePlateWithHolesAndHandle();
 
-//linear_extrude 
-%polygon(points=[[0, 0],[0, 100],[100, 0]], paths=[0,1,2], convexity = 2);
+//linear_extrude(height=100)
+//polygon(points=[[0, 0],[0, 100],[100, 0]], paths=[0,1,2], convexity = 2);
+//polygon(points=[[0,0],[100,0],[0,100],[10,10],[80,10],[10,80]], paths=[[0,1,2],[3,4,5]]);
+//hull() {
+//polygon(points=[[0,0],[100,0],[0,100]], paths=[[0,1,2]]);
+//
+//translate([100,100,0])
+//circle(r=5);
+//}
