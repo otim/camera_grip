@@ -9,7 +9,7 @@ cam_back_radius = 15;
 cam_front_radius = 4;
 
 base_plate_thickness = 8.8;
-handle_height = 48;
+handle_height = 47;
 
 hole_tolerance = 1; // will be added to the measured diameters
 
