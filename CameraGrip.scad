@@ -13,7 +13,6 @@ handle_height = 47;
 
 hole_tolerance = 1; // will be added to the measured diameters
 
-// work in progress {
 // Create a hull of two to four circles
 // Usage: RoundedCornerPolygon([x1, y1, r1], ..., [x4, y4, r4])
 module RoundedCornerPolygon(A=[0, 0, 0], B=[0, 0, 0], C=[0, 0, -1], D=[0, 0, -1]) {
@@ -45,7 +44,7 @@ module RoundedCornerPolygon(A=[0, 0, 0], B=[0, 0, 0], C=[0, 0, -1], D=[0, 0, -1]
 	// }
 
 }
-// }
+
 
 module BasePlate() {
 
@@ -56,6 +55,7 @@ module BasePlate() {
 		[-(cam_width/2-cam_front_radius-cam_slope), (cam_depth/2-cam_front_radius), cam_front_radius]);
 
 }
+
 
 module Handle() {
 
@@ -156,6 +156,7 @@ module Handle() {
 
 }
 
+
 // function to make simple holes, supports negative depth!
 module Hole(diameter, depth, placement=[0, 0, 0]) {
 
@@ -165,6 +166,7 @@ module Hole(diameter, depth, placement=[0, 0, 0]) {
 	circle(r=diameter/2);
 
 }
+
 
 module BasePlateHoles(tolerance = 0) {
 
@@ -219,6 +221,7 @@ module BasePlateHoles(tolerance = 0) {
 
 }
 
+
 module BasePlateWithHolesAndHandle() {
 
 	// Cut Holes for levers on the bottom of the camera
@@ -238,14 +241,5 @@ module BasePlateWithHolesAndHandle() {
 
 }
 
-BasePlateWithHolesAndHandle();
 
-//linear_extrude(height=100)
-//polygon(points=[[0, 0],[0, 100],[100, 0]], paths=[0,1,2], convexity = 2);
-//polygon(points=[[0,0],[100,0],[0,100],[10,10],[80,10],[10,80]], paths=[[0,1,2],[3,4,5]]);
-//hull() {
-//polygon(points=[[0,0],[100,0],[0,100]], paths=[[0,1,2]]);
-//
-//translate([100,100,0])
-//circle(r=5);
-//}
+BasePlateWithHolesAndHandle();
