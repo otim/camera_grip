@@ -9,7 +9,13 @@ cam_back_radius = 15;
 cam_front_radius = 4;
 
 base_plate_thickness = 8.8;
+
 handle_height = 47;
+handle_depth = 15;
+handle_width = 17;
+
+handle_outer_radius = 6;
+handle_radius = 2;
 
 hole_tolerance = 1; // will be added to the measured diameters
 
@@ -41,7 +47,6 @@ module RoundedCornerPolygon(A=[0, 0, 0], B=[0, 0, 0], C=[0, 0, -1], D=[0, 0, -1]
 		}
 
 	}
-	// }
 
 }
 
@@ -59,12 +64,6 @@ module BasePlate() {
 
 module Handle() {
 
-	handle_depth = 15;
-	handle_width = 17;
-
-	handle_outer_radius = 6;
-	handle_radius = 2;
-
 	handle_outer_right_corner_x = (cam_width/2-handle_outer_radius-(cam_depth+handle_depth-cam_back_radius-handle_outer_radius)*cam_slope/(cam_depth-cam_back_radius-cam_front_radius));
 	handle_outer_right_corner_y = cam_depth/2+handle_depth-handle_outer_radius;
 
@@ -77,82 +76,50 @@ module Handle() {
 	handle_inner_left_corner_x = handle_outer_left_corner_x;
 	handle_inner_left_corner_y = handle_inner_right_corner_y;
 
+	// handle base
+	difference() {
 
-	//difference() {
+		union(){
 
-		// handle base
-		difference() {
+			linear_extrude(height=base_plate_thickness)
+			RoundedCornerPolygon([(cam_width/2-cam_front_radius-cam_slope), (cam_depth/2-cam_front_radius), cam_front_radius],
+				[handle_outer_right_corner_x, (cam_depth/2+handle_depth-handle_outer_radius), handle_outer_radius],
+				[handle_outer_left_corner_x, (cam_depth/2+handle_depth-handle_radius), handle_radius],
+				[handle_inner_left_corner_x, (cam_depth/2-cam_front_radius), handle_radius]);
 
-			union(){
-
-				linear_extrude(height=base_plate_thickness)
-				RoundedCornerPolygon([(cam_width/2-cam_front_radius-cam_slope), (cam_depth/2-cam_front_radius), cam_front_radius],
-					[handle_outer_right_corner_x, (cam_depth/2+handle_depth-handle_outer_radius), handle_outer_radius],
-					[handle_outer_left_corner_x, (cam_depth/2+handle_depth-handle_radius), handle_radius],
-					[handle_inner_left_corner_x, (cam_depth/2-cam_front_radius), handle_radius]);
-	
-				linear_extrude(height=base_plate_thickness+handle_height-handle_radius)
-				RoundedCornerPolygon([handle_inner_right_corner_x, handle_inner_right_corner_y, handle_radius],
-					[handle_outer_right_corner_x, handle_outer_right_corner_y, handle_outer_radius],
-					[handle_outer_left_corner_x, handle_outer_left_corner_y, handle_radius],
-					[handle_inner_left_corner_x, handle_inner_left_corner_y, handle_radius]);
-			
-				translate([0, 0, base_plate_thickness+handle_height-handle_radius-1])
-				minkowski() {
-	
-					linear_extrude(height=1)//minkowski apparently only works on 3D objects...
-					hull() {
-	
-						polygon(points=[[handle_inner_left_corner_x, handle_inner_left_corner_y],[handle_inner_right_corner_x, handle_inner_right_corner_y],[handle_outer_left_corner_x, handle_outer_left_corner_y]], paths=[[0,1,2]]);
-						
-						translate([handle_outer_right_corner_x,
-							handle_outer_right_corner_y, 
-							0])
-						circle(r=handle_outer_radius-handle_radius);
+			linear_extrude(height=base_plate_thickness+handle_height-handle_radius)
+			RoundedCornerPolygon([handle_inner_right_corner_x, handle_inner_right_corner_y, handle_radius],
+				[handle_outer_right_corner_x, handle_outer_right_corner_y, handle_outer_radius],
+				[handle_outer_left_corner_x, handle_outer_left_corner_y, handle_radius],
+				[handle_inner_left_corner_x, handle_inner_left_corner_y, handle_radius]);
 		
-					}
-	
-					sphere(r=handle_radius);
+			translate([0, 0, base_plate_thickness+handle_height-handle_radius-1])
+			minkowski() {
+
+				linear_extrude(height=1)//minkowski apparently only works on 3D objects...
+				hull() {
+
+					polygon(points=[[handle_inner_left_corner_x, handle_inner_left_corner_y],[handle_inner_right_corner_x, handle_inner_right_corner_y],[handle_outer_left_corner_x, handle_outer_left_corner_y]], paths=[[0,1,2]]);
+					
+					translate([handle_outer_right_corner_x,
+						handle_outer_right_corner_y, 
+						0])
+					circle(r=handle_outer_radius-handle_radius);
 	
 				}
-	
+
+				sphere(r=handle_radius);
+
 			}
 
-			// handle top
-			/*difference() {	
-
-				translate([0, cam_depth/2+handle_radius-10, base_plate_thickness+handle_height-handle_radius-handle_outer_radius])
-				rotate([-10, 0, 0]){
-
-					linear_extrude(height=handle_height) // doesn't really matter
-					square(size = [cam_width, handle_depth*2], center = false); // doesn't really matter
-
-				}
-				
-				translate([cam_width/2-cam_slope-handle_width/2-cam_slope-2, // more or less...
-					cam_depth/2+3, 
-					0]) 
-				rotate([0, 90, 0]) {
-
-					rotate_extrude(convexity = 10, $fn = 100) {
-
-						translate([handle_height+base_plate_thickness-handle_radius-1.8*handle_width/2, 0, 0])
-						circle(r = 1.8*handle_width/2);
-
-					}
-		
-				}
-	
-			}*/
-			
-			// Cut away excess material from the handle
-			translate([0, 0, base_plate_thickness])
-			linear_extrude(height=2*handle_height)
-			square(size = [cam_width, cam_depth], center = true);
-	
 		}
+		
+		// Cut away excess material from the handle
+		translate([0, 0, base_plate_thickness])
+		linear_extrude(height=2*handle_height)
+		square(size = [cam_width, cam_depth], center = true);
 
-	//}
+	}
 
 }
 
