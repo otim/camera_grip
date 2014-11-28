@@ -8,7 +8,7 @@ cam_slope = 2;
 cam_back_radius = 15;
 cam_front_radius = 4;
 
-base_plate_thickness = 8.8;
+base_plate_thickness = 6.3; //= tripod screw length + tripod screw head height
 
 handle_height = 47;
 handle_depth = 15;
@@ -16,6 +16,12 @@ handle_width = 17;
 
 handle_outer_radius = 6;
 handle_radius = 2;
+
+tripod_hole_position_x = 60.25; // measured from left side of the camera
+tripod_hole_position_y = 15.8; // measured from the camera back
+tripod_hole_diameter = 6.2;
+tripod_screw_head_diameter = 13.50;
+tripod_screw_head_height = 3.7;
 
 hole_tolerance = 1; // will be added to the measured diameters
 
@@ -148,33 +154,9 @@ module Hole(diameter, depth, placement=[0, 0, 0]) {
 
 
 module BasePlateHoles(tolerance = 0) {
-
-	left_hole_diameter = 27.98;
 	
-	center_hole_diameter = 26.04;
-	center_hole_depth = 2.5;
-	tripod_hole_diameter = 6.2;
-	tripod_screw_head_diameter = 13.50;
-	tripod_screw_head_height = 3.7;
-	
-	right_hole_diameter = 23.06;
-	right_little_hole_diameter = 9.95;
-	
-	left_to_center_dist = 14.2;
-	center_to_right_dist = 21.6;
-	right_to_right_little_dist = 33.5;
-	
-	left_hole_x = -(left_hole_diameter/2 + left_to_center_dist + center_hole_diameter + center_to_right_dist + right_hole_diameter/2)/2;
-	center_hole_x = left_hole_x + left_hole_diameter/2 + left_to_center_dist + center_hole_diameter/2;
-	right_hole_x = -left_hole_x;// assuming symmetry!
-	
-	Hole(left_hole_diameter+tolerance, 
-		base_plate_thickness,
-		[left_hole_x, 0, 0]);
-
-	Hole(center_hole_diameter+tolerance,
-		-center_hole_depth,
-		[center_hole_x, 0, base_plate_thickness]);
+	center_hole_x = -cam_width/2 + tripod_hole_position_x;
+	center_hole_y = -cam_depth/2 + tripod_hole_position_y;
 
 	Hole(tripod_hole_diameter+tolerance,
 		base_plate_thickness,
@@ -183,20 +165,6 @@ module BasePlateHoles(tolerance = 0) {
 	Hole(tripod_screw_head_diameter+tolerance,
 		tripod_screw_head_height,
 		[center_hole_x, 0, 0]);
-
-	translate([right_hole_x, 0, 0])
-	hull() {
-
-		Hole(right_hole_diameter+tolerance,
-			base_plate_thickness);
-
-		Hole(right_little_hole_diameter+tolerance,
-			base_plate_thickness,
-			[-sqrt(right_to_right_little_dist*right_to_right_little_dist - right_to_right_little_dist*(right_hole_diameter+right_little_hole_diameter) + right_hole_diameter*right_little_hole_diameter), 
-			-right_hole_diameter/2+right_little_hole_diameter/2, 
-			0]);
-
-	}
 
 }
 
