@@ -155,7 +155,8 @@ module Hole(diameter, depth, placement=[0, 0, 0]) {
 
 module BasePlateHoles(tolerance = 0) {
 	
-	center_hole_x = -cam_width/2 + tripod_hole_position_x;
+	center_hole_x = -cam_width/2 + tripod_hole_position_x
+;
 	center_hole_y = -cam_depth/2 + tripod_hole_position_y;
 
 	Hole(tripod_hole_diameter+tolerance,
