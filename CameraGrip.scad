@@ -17,7 +17,7 @@ handle_width = 17;
 handle_outer_radius = 6;
 handle_radius = 2;
 
-tripod_hole_position_x = 60.25; // measured from left side of the camera
+tripod_hole_position_x = 57.78; // measured from left side of the camera
 tripod_hole_position_y = 15.8; // measured from the camera back
 tripod_hole_diameter = 6.2;
 tripod_screw_head_diameter = 13.50;
