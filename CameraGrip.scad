@@ -87,43 +87,28 @@ module Handle() {
 				[handle_outer_left_corner_x, (cam_depth/2+handle_depth-handle_radius), handle_radius],
 				[handle_inner_left_corner_x, (cam_depth/2-cam_front_radius), handle_radius]);
 
-<<<<<<< HEAD
 			linear_extrude(height=base_plate_thickness+handle_height-handle_radius)
 			RoundedCornerPolygon([handle_inner_right_corner_x, handle_inner_right_corner_y, handle_radius],
 				[handle_outer_right_corner_x, handle_outer_right_corner_y, handle_outer_radius],
 				[handle_outer_left_corner_x, handle_outer_left_corner_y, handle_radius],
 				[handle_inner_left_corner_x, handle_inner_left_corner_y, handle_radius]);
-=======
-				linear_extrude(height=base_plate_thickness)
-				RoundedCornerPolygon([(cam_width/2-cam_front_radius-cam_slope), (cam_depth/2-cam_front_radius), cam_front_radius],
-					[handle_outer_right_corner_x, (cam_depth/2+handle_depth-handle_outer_radius), handle_outer_radius],
-					[handle_outer_left_corner_x, (cam_depth/2+handle_depth-handle_radius), handle_radius],
-					[handle_inner_left_corner_x, (cam_depth/2-cam_front_radius), handle_radius]);
-	
-				linear_extrude(height=base_plate_thickness+handle_height-handle_radius)
-				RoundedCornerPolygon([handle_inner_right_corner_x, handle_inner_right_corner_y, handle_radius],
-					[handle_outer_right_corner_x, handle_outer_right_corner_y, handle_outer_radius],
-					[handle_outer_left_corner_x, handle_outer_left_corner_y, handle_radius],
-					[handle_inner_left_corner_x, handle_inner_left_corner_y, handle_radius]);
-			
-				translate([0, 0, base_plate_thickness+handle_height-handle_radius-.1])
-				minkowski() {
-	
-					linear_extrude(height=.1)//minkowski apparently only works on 3D objects...
-					hull() {
-	
-						polygon(points=[[handle_inner_left_corner_x, handle_inner_left_corner_y],[handle_inner_right_corner_x, handle_inner_right_corner_y],[handle_outer_left_corner_x, handle_outer_left_corner_y]], paths=[[0,1,2]]);
-						
-						translate([handle_outer_right_corner_x,
-							handle_outer_right_corner_y, 
-							0])
-						circle(r=handle_outer_radius-handle_radius);
->>>>>>> 3f136e723462c20319eec1d385d0a96fa3472e46
+
+			linear_extrude(height=base_plate_thickness)
+			RoundedCornerPolygon([(cam_width/2-cam_front_radius-cam_slope), (cam_depth/2-cam_front_radius), cam_front_radius],
+				[handle_outer_right_corner_x, (cam_depth/2+handle_depth-handle_outer_radius), handle_outer_radius],
+				[handle_outer_left_corner_x, (cam_depth/2+handle_depth-handle_radius), handle_radius],
+				[handle_inner_left_corner_x, (cam_depth/2-cam_front_radius), handle_radius]);
+
+			linear_extrude(height=base_plate_thickness+handle_height-handle_radius)
+			RoundedCornerPolygon([handle_inner_right_corner_x, handle_inner_right_corner_y, handle_radius],
+				[handle_outer_right_corner_x, handle_outer_right_corner_y, handle_outer_radius],
+				[handle_outer_left_corner_x, handle_outer_left_corner_y, handle_radius],
+				[handle_inner_left_corner_x, handle_inner_left_corner_y, handle_radius]);
 		
-			translate([0, 0, base_plate_thickness+handle_height-handle_radius-1])
+			translate([0, 0, base_plate_thickness+handle_height-handle_radius-.1])
 			minkowski() {
 
-				linear_extrude(height=1)//minkowski apparently only works on 3D objects...
+				linear_extrude(height=.1)//minkowski apparently only works on 3D objects...
 				hull() {
 
 					polygon(points=[[handle_inner_left_corner_x, handle_inner_left_corner_y],[handle_inner_right_corner_x, handle_inner_right_corner_y],[handle_outer_left_corner_x, handle_outer_left_corner_y]], paths=[[0,1,2]]);
@@ -132,9 +117,9 @@ module Handle() {
 						handle_outer_right_corner_y, 
 						0])
 					circle(r=handle_outer_radius-handle_radius);
-	
-				}
 
+				}
+		
 				sphere(r=handle_radius);
 
 			}
